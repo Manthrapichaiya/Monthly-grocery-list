@@ -93,8 +93,8 @@
                 </button>
             </div>
             <textarea id="outputList" class="w-full h-40 p-3 text-gray-800 border-2 border-dashed border-gray-300 rounded-lg resize-none bg-gray-200 focus:outline-none" placeholder="The selected list will appear here." readonly></textarea>
-            <button onclick="copyToClipboard()" class="w-full py-2 mt-2 bg-blue-500 text-white font-bold hover:bg-blue-600 transition-colors duration-200 rounded-lg shadow-md">
-                Copy to Clipboard
+            <button onclick="sendList()" class="w-full py-2 mt-2 bg-green-500 text-white font-bold hover:bg-green-600 transition-colors duration-200 rounded-lg shadow-md">
+                Send List via WhatsApp
             </button>
         </div>
     </div>
@@ -225,21 +225,18 @@
             document.getElementById('outputList').value = output;
         };
 
-        // Copy the generated list to clipboard
-        window.copyToClipboard = () => {
+        // Send the generated list via WhatsApp
+        window.sendList = () => {
             const outputTextarea = document.getElementById('outputList');
-            outputTextarea.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    showModal('List copied successfully!');
-                } else {
-                    showModal('Failed to copy the list.');
-                }
-            } catch (err) {
-                console.error('Failed to copy: ', err);
-                showModal('Failed to copy the list.');
+            const text = outputTextarea.value.trim();
+            if (!text || text.startsWith('Please select')) {
+                showModal('Please generate a list before sending.');
+                return;
             }
+            const encoded = encodeURIComponent(text);
+            // WhatsApp Web share link (user must have WhatsApp installed or use WhatsApp Web)
+            const url = `https://wa.me/?text=${encoded}`;
+            window.open(url, '_blank');
         };
 
         // Render the list immediately on page load
